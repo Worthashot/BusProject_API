@@ -3,7 +3,7 @@ import { PermissionLevel } from '../types/permission.enums';
 
 
 @Entity('api_keys')
-export class ApiKey {
+export class ApiKeyEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

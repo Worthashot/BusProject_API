@@ -1,18 +1,23 @@
 import { Injectable, OnModuleInit, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiKey } from './entities/apikey.entity';
+import { ApiKeyEntity } from './entities/apikey.entity';
+import { ApiKey } from './interfaces/api.interface';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AuthService implements OnApplicationBootstrap{
   private readonly logger = new Logger(AuthService.name);
 
-  private apiKeyCache: Map<string, ApiKey> = new Map();
+  private apiKeyCache: Map<string, ApiKeyEntity> = new Map();
   private cacheLoaded: boolean = false;
 
   constructor(
-    @InjectRepository(ApiKey, "old_api")
-    private apiKeyRepository: Repository<ApiKey>,
+    @InjectRepository(ApiKeyEntity, "old_api")
+    private apiKeyRepository: Repository<ApiKeyEntity>,
+    @InjectDataSource('live') 
+    private liveDataSource: DataSource,
   ) {}
 
   async onApplicationBootstrap() {
@@ -77,9 +82,10 @@ export class AuthService implements OnApplicationBootstrap{
   }  
 
   // TODO validation
-  async isValidApiKeyFormat(key: ApiKey): Promise<Boolean> {
+  async isValidApiKeyFormat(key: ApiKeyEntity): Promise<Boolean> {
     return true
   }
+
   async validateApiKey(key: string): Promise<ApiKey | null> {
     // Safety check - ensure cache is loaded
     if (!this.cacheLoaded) {
@@ -105,7 +111,7 @@ export class AuthService implements OnApplicationBootstrap{
   }
 
   // Optional: Methods to manage API keys
-  async createApiKey(keyData: Partial<ApiKey>): Promise<ApiKey> {
+  async createApiKey(keyData: Partial<ApiKeyEntity>): Promise<ApiKeyEntity> {
     const apiKey = this.apiKeyRepository.create(keyData);
     return this.apiKeyRepository.save(apiKey);
   }
@@ -117,9 +123,151 @@ export class AuthService implements OnApplicationBootstrap{
     );
   }
 
-  cached_keys(): Map<string, ApiKey>{
+
+  cached_keys(): Map<string, ApiKeyEntity>{
      return this.apiKeyCache;
   }
+
+  async storeNewAPIKeys(apiKey : ApiKey): Promise<void>{
+    this.logger.log('Storing New ApiKeys...');
+    try {
+
+
+      // Insert into new database
+
+      await this.liveDataSource.query(
+        `INSERT INTO api_keys (key, name, permissionLevel, isActive) 
+          VALUES (?, ?, ?, ?)`,
+        [
+          apiKey.key, 
+          apiKey.name, 
+          apiKey.permissionLevel, 
+          apiKey.isActive, 
+        ]
+      );
+    
+
+      this.logger.log('✅ API keys stored successfully');
+      
+    } catch (error) {
+      this.logger.error('Failed to store API keys:', error);
+      throw error;
+    }    
+  }
+
+
+  async loadNewApiKeysIntoCache(): Promise<void> {
+    const maxRetries = 3;
+    let retryCount = 0;
+    const queryRunner = this.liveDataSource.createQueryRunner();
+
+    while (retryCount < maxRetries) {
+      try {
+        this.logger.log(`Loading API keys from database (attempt ${retryCount + 1})...`);
+
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        const activeApiKeys = await queryRunner.query(`
+          SELECT * FROM api_keys WHERE isActive = 'TRUE';
+          )
+        `);        
+
+        // Clear existing cache
+        this.apiKeyCache.clear();
+
+        // Populate the cache
+        let validKeyCount = 0;
+        activeApiKeys.forEach(apiKey => {
+          this.apiKeyCache.set(apiKey.key, apiKey);
+          validKeyCount++;
+        });
+
+        this.cacheLoaded = true;
+        
+        this.logger.log(`✅ Successfully loaded ${validKeyCount} API keys into memory cache`);
+        this.logger.debug(`Cache size: ${this.apiKeyCache.size} keys`);
+        
+        // Log some statistics
+        // this.logCacheStatistics();
+        return; // Success - exit retry loop
+
+      } catch (error) {
+        retryCount++;
+        this.logger.error(`Failed to load API keys (attempt ${retryCount}/${maxRetries}):`, error.message);
+
+        if (retryCount >= maxRetries) {
+          this.logger.error('CRITICAL: All retries failed. Application cannot start without API keys.');
+          throw new Error(`Failed to load API keys after ${maxRetries} attempts: ${error.message}`);
+        }
+
+        // Wait before retrying (exponential backoff)
+        const waitTime = 1000 * retryCount;
+        this.logger.log(`Retrying in ${waitTime}ms...`);
+        await this.delay(waitTime);
+      }
+    }
+  }  
+  async deleteApiKey(apiKey: ApiKey): Promise<void>{
+    this.logger.log('Deleting ApiKey...');
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      await queryRunner.startTransaction();
+
+      // Insert into new database
+
+      await queryRunner.query(
+        'DELETE FROM api_keys WHERE key = ?',
+        [
+          apiKey.key
+        ]
+      );
+    
+      await queryRunner.commitTransaction();
+      this.logger.log('✅ API keys deleted successfully');
+      
+    } catch (error) {
+      this.logger.error('Failed to delete API keys:', error);
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally{
+      await queryRunner.release();
+    }        
+  }
+
+  async changeApiKeyStatus(apiKey : ApiKey) : Promise<void>{
+    this.logger.log('changing ApiKeys Status...');
+
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      await queryRunner.startTransaction();
+
+      // Insert into new database
+
+      await queryRunner.query(
+        `UPDATE api_keys 
+         SET isActive = ?
+         WHERE key = ?`,
+        [
+          apiKey.isActive,
+          apiKey.key
+        ]
+      );
+    
+      await queryRunner.commitTransaction();
+      this.logger.log('✅ API key status changed successfully');
+      
+    } catch (error) {
+      this.logger.error('Failed to change API key status:', error);
+      await queryRunner.rollbackTransaction();
+      throw error;
+    }  finally{
+      await queryRunner.release();
+    }          
+  }
+
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
