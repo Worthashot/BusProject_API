@@ -1,0 +1,10 @@
+import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AuthService } from '../auth.service';
+export declare class ApiKeyGuard implements CanActivate {
+    private readonly authService;
+    private readonly reflector;
+    constructor(authService: AuthService, reflector: Reflector);
+    canActivate(context: ExecutionContext): Promise<boolean>;
+    private hasPermission;
+}
