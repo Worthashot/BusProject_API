@@ -1,9 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ObjectLiteral  } from 'typeorm';
-import { ApiKey } from '../auth/entities/apikey.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { OldLog, Log } from '../log/entities/log.entity';
 import { DataSource } from 'typeorm';
 
 @Injectable()

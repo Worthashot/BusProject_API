@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 import { PermissionLevel } from '../types/permission.enums';
 
-export class ApiKeyNewDto {
+export class ApiKeyChangeStatusDto {
   @IsNotEmpty()
   readonly key: string;
 
