@@ -170,18 +170,18 @@ export class MigrationService {
       this.logger.log(`Found ${oldLog.length} logs to migrate`);
 
       // Insert into new database
-      for (const oldKey of oldLog) {
+      
+      const values = oldLog.flatMap(log => 
+        [log.tripID, log.journeyID, log.stopID, log.date, log.time]
+      );
+
+      const placeholders = oldLog.map(() => '(?, ?, ?, ?, ?)').join(', ');
+
         await this.liveDataSource.query(
           `INSERT INTO log (trip_id, journey_id, stop_id, time) 
-           VALUES (?, ?, ?, ?)`,
-          [
-            oldKey.trip_id, 
-            oldKey.journey_id, 
-            oldKey.stop_id, 
-            oldKey.time, 
-          ]
+           VALUES ${placeholders}`, values
         );
-      }
+      
 
       this.logger.log('✅ logs migrated successfully');
       

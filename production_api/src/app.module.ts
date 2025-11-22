@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CatsModule } from './cats/cats.module';
 import { MigrationModule } from './migration/migration.module';
 import {AuthModule} from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyEntity } from './auth/entities/apikey.entity';
 import { LogEntity } from './log/entities/log.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       })
     }),
 
-    CatsModule,
+    LogModule,
     MigrationModule,
     AuthModule,
   ],
