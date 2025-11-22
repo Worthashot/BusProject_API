@@ -20,8 +20,8 @@ exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKey], 'old_api'),
-            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKey], 'live'),
+            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'old_api'),
+            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'live'),
         ],
         providers: [
             auth_service_1.AuthService,

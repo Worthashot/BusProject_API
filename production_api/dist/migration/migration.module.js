@@ -19,10 +19,10 @@ exports.MigrationModule = MigrationModule;
 exports.MigrationModule = MigrationModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKey], 'old_api'),
-            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKey], 'live'),
-            typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log], 'old_log'),
-            typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log], 'live'),
+            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'old_api'),
+            typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'live'),
+            typeorm_1.TypeOrmModule.forFeature([log_entity_1.LogEntity], 'old_log'),
+            typeorm_1.TypeOrmModule.forFeature([log_entity_1.LogEntity], 'live'),
         ],
         controllers: [migration_controller_1.MigrationController],
         providers: [migration_service_1.MigrationService],

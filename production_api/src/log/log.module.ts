@@ -1,11 +1,11 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Log } from '../log/entities/log.entity';
+import { LogEntity } from '../log/entities/log.entity';
 import { Module } from '@nestjs/common';
 
 
 @Module({
 imports: [
-    TypeOrmModule.forFeature([Log]), // Register entity for this module
+    TypeOrmModule.forFeature([LogEntity]), // Register entity for this module
   ],
 
 

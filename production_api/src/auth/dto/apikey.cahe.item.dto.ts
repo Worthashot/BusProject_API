@@ -12,6 +12,6 @@ export class ApiKeyCacheItemDto {
 
   isActive : boolean
 
-  createdAt : Date
+  createdAt? : Date
 }
 

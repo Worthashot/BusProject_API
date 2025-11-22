@@ -1,5 +1,5 @@
 import { PermissionLevel } from '../types/permission.enums';
-export declare class ApiKey {
+export declare class ApiKeyEntity {
     id: number;
     key: string;
     name: string;

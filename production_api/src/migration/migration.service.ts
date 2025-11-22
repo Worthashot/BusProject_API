@@ -167,7 +167,7 @@ export class MigrationService {
         'SELECT * FROM arrivals'
       );
 
-      this.logger.log(`Found ${oldLog.length} API keys to migrate`);
+      this.logger.log(`Found ${oldLog.length} logs to migrate`);
 
       // Insert into new database
       for (const oldKey of oldLog) {
@@ -183,10 +183,10 @@ export class MigrationService {
         );
       }
 
-      this.logger.log('✅ API keys migrated successfully');
+      this.logger.log('✅ logs migrated successfully');
       
     } catch (error) {
-      this.logger.error('Failed to migrate API keys:', error);
+      this.logger.error('Failed to migrate logs:', error);
       throw error;
     }
   }

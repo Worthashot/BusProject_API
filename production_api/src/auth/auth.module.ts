@@ -3,13 +3,13 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import{AuthService} from './auth.service'
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiKey } from '../auth/entities/apikey.entity';
+import { ApiKeyEntity } from '../auth/entities/apikey.entity';
 import { AuthController } from './auth.controller';
 
 @Module({
 imports: [
-    TypeOrmModule.forFeature([ApiKey], 'old_api'),
-    TypeOrmModule.forFeature([ApiKey], 'live'),
+    TypeOrmModule.forFeature([ApiKeyEntity], 'old_api'),
+    TypeOrmModule.forFeature([ApiKeyEntity], 'live'),
   ],
 
   providers: [

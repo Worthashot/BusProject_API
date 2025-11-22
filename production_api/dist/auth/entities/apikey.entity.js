@@ -9,10 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiKey = void 0;
+exports.ApiKeyEntity = void 0;
 const typeorm_1 = require("typeorm");
 const permission_enums_1 = require("../types/permission.enums");
-let ApiKey = class ApiKey {
+let ApiKeyEntity = class ApiKeyEntity {
     id;
     key;
     name;
@@ -20,19 +20,19 @@ let ApiKey = class ApiKey {
     isActive;
     createdAt;
 };
-exports.ApiKey = ApiKey;
+exports.ApiKeyEntity = ApiKeyEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ApiKey.prototype, "id", void 0);
+], ApiKeyEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], ApiKey.prototype, "key", void 0);
+], ApiKeyEntity.prototype, "key", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], ApiKey.prototype, "name", void 0);
+], ApiKeyEntity.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'text',
@@ -40,16 +40,16 @@ __decorate([
         default: permission_enums_1.PermissionLevel.PUBLIC
     }),
     __metadata("design:type", String)
-], ApiKey.prototype, "permissionLevel", void 0);
+], ApiKeyEntity.prototype, "permissionLevel", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
-], ApiKey.prototype, "isActive", void 0);
+], ApiKeyEntity.prototype, "isActive", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], ApiKey.prototype, "createdAt", void 0);
-exports.ApiKey = ApiKey = __decorate([
+], ApiKeyEntity.prototype, "createdAt", void 0);
+exports.ApiKeyEntity = ApiKeyEntity = __decorate([
     (0, typeorm_1.Entity)('api_keys')
-], ApiKey);
+], ApiKeyEntity);
 //# sourceMappingURL=apikey.entity.js.map

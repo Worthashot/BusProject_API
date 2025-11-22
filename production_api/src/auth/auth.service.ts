@@ -130,12 +130,14 @@ export class AuthService implements OnApplicationBootstrap{
 
   async storeNewAPIKeys(apiKey : ApiKey): Promise<void>{
     this.logger.log('Storing New ApiKeys...');
+    const queryRunner = this.liveDataSource.createQueryRunner();
     try {
-
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
       // Insert into new database
 
-      await this.liveDataSource.query(
+      await queryRunner.query(
         `INSERT INTO api_keys (key, name, permissionLevel, isActive) 
           VALUES (?, ?, ?, ?)`,
         [
@@ -151,12 +153,14 @@ export class AuthService implements OnApplicationBootstrap{
       
     } catch (error) {
       this.logger.error('Failed to store API keys:', error);
-      throw error;
-    }    
+      queryRunner.rollbackTransaction();
+    } finally{
+      await queryRunner.release();
+    }        
   }
 
 
-  async loadNewApiKeysIntoCache(): Promise<void> {
+  async loadLiveApiKeysIntoCache(): Promise<void> {
     const maxRetries = 3;
     let retryCount = 0;
     const queryRunner = this.liveDataSource.createQueryRunner();
@@ -169,7 +173,7 @@ export class AuthService implements OnApplicationBootstrap{
         await queryRunner.startTransaction();
 
         const activeApiKeys = await queryRunner.query(`
-          SELECT * FROM api_keys WHERE isActive = 'TRUE';
+          SELECT * FROM api_keys WHERE isActive = 1;
           )
         `);        
 
@@ -230,7 +234,6 @@ export class AuthService implements OnApplicationBootstrap{
     } catch (error) {
       this.logger.error('Failed to delete API keys:', error);
       await queryRunner.rollbackTransaction();
-      throw error;
     } finally{
       await queryRunner.release();
     }        
@@ -262,7 +265,6 @@ export class AuthService implements OnApplicationBootstrap{
     } catch (error) {
       this.logger.error('Failed to change API key status:', error);
       await queryRunner.rollbackTransaction();
-      throw error;
     }  finally{
       await queryRunner.release();
     }          

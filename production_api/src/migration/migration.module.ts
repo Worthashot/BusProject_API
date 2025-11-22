@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MigrationController } from './migration.controller';
 import { MigrationService } from './migration.service';
-import { ApiKey } from '../auth/entities/apikey.entity';
+import { ApiKeyEntity } from '../auth/entities/apikey.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Log } from 'src/log/entities/log.entity';
+import { LogEntity } from 'src/log/entities/log.entity';
 @Module({
     imports: [
-        TypeOrmModule.forFeature([ApiKey], 'old_api'),
-        TypeOrmModule.forFeature([ApiKey], 'live'),
-        TypeOrmModule.forFeature([Log], 'old_log'),
-        TypeOrmModule.forFeature([Log], 'live'),
+        TypeOrmModule.forFeature([ApiKeyEntity], 'old_api'),
+        TypeOrmModule.forFeature([ApiKeyEntity], 'live'),
+        TypeOrmModule.forFeature([LogEntity], 'old_log'),
+        TypeOrmModule.forFeature([LogEntity], 'live'),
 
       ],
 

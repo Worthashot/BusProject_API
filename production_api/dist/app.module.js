@@ -27,7 +27,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: () => ({
                     type: 'sqlite',
                     database: 'old_api.db',
-                    entities: [apikey_entity_1.ApiKey],
+                    entities: [apikey_entity_1.ApiKeyEntity],
                     synchronize: false,
                 })
             }),
@@ -36,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: () => ({
                     type: 'sqlite',
                     database: 'old_log.db',
-                    entities: [log_entity_1.Log],
+                    entities: [log_entity_1.LogEntity],
                     synchronize: false,
                 })
             }),
@@ -45,7 +45,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: () => ({
                     type: 'sqlite',
                     database: 'live.db',
-                    entities: [apikey_entity_1.ApiKey, log_entity_1.Log],
+                    entities: [apikey_entity_1.ApiKeyEntity, log_entity_1.LogEntity],
                     synchronize: false,
                 })
             }),

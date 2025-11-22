@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Req, Body, UseGuards, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, UseGuards, Delete, Logger } from '@nestjs/common';
 import { ApiKeyEntity } from './entities/apikey.entity';
 import { ApiKey } from './interfaces/api.interface';
 import { AuthService } from './auth.service';
@@ -13,7 +13,7 @@ import { ApiKeyChangeStatusDto } from './dto/apikey.change.status.dto';
 @Controller('auth')
 export class AuthController {
   constructor (private authService: AuthService) {}
-
+  private readonly logger = new Logger(AuthService.name);
   @Get("all_keys")
   @Admin()
   async get_all_api_keys() : Promise<ApiKeyCacheResponseDto> {
@@ -39,22 +39,25 @@ export class AuthController {
   @Admin()
   async add_key(@Body() apiKeyNewDto: ApiKeyNewDto){
         this.authService.storeNewAPIKeys(apiKeyNewDto)
-        this.authService.loadNewApiKeysIntoCache()
     }
 
   @Delete("remove_key")
   @Admin()
   async remove_key(@Body() apiKeyDeleteDto: ApiKeyDeleteDto){
+      this.logger.log('Removing Api Key '.concat(apiKeyDeleteDto.key));
       this.authService.deleteApiKey(apiKeyDeleteDto)
-      this.authService.loadNewApiKeysIntoCache()
     } 
 
   @Post("change_key_status")
   @Admin()
   async change_status(@Body() apiChangeStatusDto : ApiKeyChangeStatusDto){
     this.authService.changeApiKeyStatus(apiChangeStatusDto)
-    this.authService.loadNewApiKeysIntoCache()
   }
 
+  @Post("update_apikey_cache")
+  @Admin()
+  async set_live(){
+    this.authService.loadLiveApiKeysIntoCache()
+  }
 
 }

@@ -3,8 +3,8 @@ import { CatsModule } from './cats/cats.module';
 import { MigrationModule } from './migration/migration.module';
 import {AuthModule} from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiKey } from './auth/entities/apikey.entity';
-import { Log } from './log/entities/log.entity';
+import { ApiKeyEntity } from './auth/entities/apikey.entity';
+import { LogEntity } from './log/entities/log.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: () => ({
       type: 'sqlite',
       database: 'old_api.db', 
-      entities: [ApiKey],
+      entities: [ApiKeyEntity],
       synchronize: false, 
       })
     }),
@@ -27,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: () => ({
       type: 'sqlite',
       database: 'old_log.db', 
-      entities: [Log],
+      entities: [LogEntity],
       synchronize: false, 
       })
     }),
@@ -37,7 +37,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: () => ({
       type: 'sqlite',
       database: 'live.db', 
-      entities: [ApiKey, Log],
+      entities: [ApiKeyEntity, LogEntity],
       synchronize: false, 
       })
     }),

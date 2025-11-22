@@ -9,68 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Log = exports.OldLog = void 0;
+exports.LogEntity = void 0;
 const typeorm_1 = require("typeorm");
-let OldLog = class OldLog {
+let LogEntity = class LogEntity {
     id;
     trip_id;
     journey_id;
     stop_id;
     time;
 };
-exports.OldLog = OldLog;
+exports.LogEntity = LogEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], OldLog.prototype, "id", void 0);
+], LogEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", Number)
-], OldLog.prototype, "trip_id", void 0);
+], LogEntity.prototype, "trip_id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], OldLog.prototype, "journey_id", void 0);
+], LogEntity.prototype, "journey_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Number)
-], OldLog.prototype, "stop_id", void 0);
+], LogEntity.prototype, "stop_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Number)
-], OldLog.prototype, "time", void 0);
-exports.OldLog = OldLog = __decorate([
-    (0, typeorm_1.Entity)('oldlog')
-], OldLog);
-let Log = class Log {
-    id;
-    trip_id;
-    journey_id;
-    stop_id;
-    time;
-};
-exports.Log = Log;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], Log.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", Number)
-], Log.prototype, "trip_id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Log.prototype, "journey_id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Number)
-], Log.prototype, "stop_id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Number)
-], Log.prototype, "time", void 0);
-exports.Log = Log = __decorate([
+], LogEntity.prototype, "time", void 0);
+exports.LogEntity = LogEntity = __decorate([
     (0, typeorm_1.Entity)('log')
-], Log);
+], LogEntity);
 //# sourceMappingURL=log.entity.js.map

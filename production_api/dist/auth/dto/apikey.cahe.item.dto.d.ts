@@ -4,5 +4,5 @@ export declare class ApiKeyCacheItemDto {
     readonly name: string;
     permissionLevel: PermissionLevel;
     isActive: boolean;
-    createdAt: Date;
+    createdAt?: Date;
 }

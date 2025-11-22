@@ -16,7 +16,7 @@ exports.LogModule = LogModule;
 exports.LogModule = LogModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([log_entity_1.Log]),
+            typeorm_1.TypeOrmModule.forFeature([log_entity_1.LogEntity]),
         ],
     })
 ], LogModule);

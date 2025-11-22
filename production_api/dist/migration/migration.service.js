@@ -147,7 +147,7 @@ let MigrationService = MigrationService_1 = class MigrationService {
         this.logger.log('Starting log migration...');
         try {
             const oldLog = await this.oldLogDataSource.query('SELECT * FROM arrivals');
-            this.logger.log(`Found ${oldLog.length} API keys to migrate`);
+            this.logger.log(`Found ${oldLog.length} logs to migrate`);
             for (const oldKey of oldLog) {
                 await this.liveDataSource.query(`INSERT INTO log (trip_id, journey_id, stop_id, time) 
            VALUES (?, ?, ?, ?)`, [
@@ -157,10 +157,10 @@ let MigrationService = MigrationService_1 = class MigrationService {
                     oldKey.time,
                 ]);
             }
-            this.logger.log('✅ API keys migrated successfully');
+            this.logger.log('✅ logs migrated successfully');
         }
         catch (error) {
-            this.logger.error('Failed to migrate API keys:', error);
+            this.logger.error('Failed to migrate logs:', error);
             throw error;
         }
     }
