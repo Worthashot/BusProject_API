@@ -5,10 +5,12 @@ export declare class MigrationService {
     private liveDataSource;
     private readonly logger;
     constructor(oldApiDataSource: DataSource, oldLogDataSource: DataSource, liveDataSource: DataSource);
-    performMigrationApiKey(): Promise<void>;
     performMigrationLog(): Promise<void>;
+    performMigrationApiKey(): Promise<void>;
     setupNewDatabaseApiKey(): Promise<void>;
     setupNewDatabaseLog(): Promise<void>;
     migrateApi(): Promise<void>;
-    migrateLog(): Promise<void>;
+    migrateLog(oldLog: any): Promise<void>;
+    private getDate;
+    private getTime;
 }

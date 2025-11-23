@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const cats_module_1 = require("./cats/cats.module");
 const migration_module_1 = require("./migration/migration.module");
 const auth_module_1 = require("./auth/auth.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const apikey_entity_1 = require("./auth/entities/apikey.entity");
+const log_old_entity_1 = require("./log/entities/log_old.entity");
 const log_entity_1 = require("./log/entities/log.entity");
 const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
@@ -36,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: () => ({
                     type: 'sqlite',
                     database: 'old_log.db',
-                    entities: [log_entity_1.LogEntity],
+                    entities: [log_old_entity_1.LogEntityOld],
                     synchronize: false,
                 })
             }),
@@ -49,7 +49,6 @@ exports.AppModule = AppModule = __decorate([
                     synchronize: false,
                 })
             }),
-            cats_module_1.CatsModule,
             migration_module_1.MigrationModule,
             auth_module_1.AuthModule,
         ],

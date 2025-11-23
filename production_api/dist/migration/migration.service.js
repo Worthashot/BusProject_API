@@ -27,11 +27,18 @@ let MigrationService = MigrationService_1 = class MigrationService {
         this.oldLogDataSource = oldLogDataSource;
         this.liveDataSource = liveDataSource;
     }
-    async performMigrationApiKey() {
+    async performMigrationLog() {
         try {
-            this.logger.log('Starting ApiKey database migration...');
-            await this.setupNewDatabaseApiKey();
-            await this.migrateApi();
+            this.logger.log('Starting Log database migration...');
+            await this.setupNewDatabaseLog();
+            let limit = 1000;
+            let offset = 0;
+            let oldLog;
+            do {
+                oldLog = await this.oldLogDataSource.query('SELECT * FROM arrivals ORDER BY time LIMIT ? OFFSET ?', [limit, offset]);
+                await this.migrateLog(oldLog);
+                offset += limit;
+            } while (oldLog.length === limit);
             this.logger.log('Migration completed successfully!');
         }
         catch (error) {
@@ -39,11 +46,11 @@ let MigrationService = MigrationService_1 = class MigrationService {
             throw error;
         }
     }
-    async performMigrationLog() {
+    async performMigrationApiKey() {
         try {
-            this.logger.log('Starting Log database migration...');
-            await this.setupNewDatabaseLog();
-            await this.migrateLog();
+            this.logger.log('Starting ApiKey database migration...');
+            await this.setupNewDatabaseApiKey();
+            await this.migrateApi();
             this.logger.log('Migration completed successfully!');
         }
         catch (error) {
@@ -101,6 +108,7 @@ let MigrationService = MigrationService_1 = class MigrationService {
             "trip_id" INTEGER NOT NULL,
             "journey_id" VARCHAR NOT NULL,
             "stop_id" INTEGER NOT NULL,
+            "date" INTEGER NOT NULL,
             "time" INTEGER NOT NULL
           )
         `);
@@ -143,26 +151,33 @@ let MigrationService = MigrationService_1 = class MigrationService {
             throw error;
         }
     }
-    async migrateLog() {
-        this.logger.log('Starting log migration...');
+    async migrateLog(oldLog) {
+        this.logger.log('Starting batch log migration...');
         try {
-            const oldLog = await this.oldLogDataSource.query('SELECT * FROM arrivals');
-            this.logger.log(`Found ${oldLog.length} logs to migrate`);
-            for (const oldKey of oldLog) {
-                await this.liveDataSource.query(`INSERT INTO log (trip_id, journey_id, stop_id, time) 
-           VALUES (?, ?, ?, ?)`, [
-                    oldKey.trip_id,
-                    oldKey.journey_id,
-                    oldKey.stop_id,
-                    oldKey.time,
-                ]);
-            }
+            const values = oldLog.flatMap(log => [log.trip_id, log.journey_id, log.stop_id, this.getDate(log.time), this.getTime(log.time)]);
+            const placeholders = oldLog.map(() => '(?, ?, ?, ?, ?)').join(', ');
+            await this.liveDataSource.query(`INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
+           VALUES ${placeholders}`, values);
             this.logger.log('✅ logs migrated successfully');
         }
         catch (error) {
             this.logger.error('Failed to migrate logs:', error);
             throw error;
         }
+    }
+    async getDate(unixTime) {
+        const date = new Date(unixTime * 1000);
+        const year = date.toLocaleString('en-US', { timeZone: 'Europe/London', year: 'numeric' });
+        const month = date.toLocaleString('en-US', { timeZone: 'Europe/London', month: '2-digit' });
+        const day = date.toLocaleString('en-US', { timeZone: 'Europe/London', day: '2-digit' });
+        return Number(`${year}${month}${day}`);
+    }
+    async getTime(unixTime) {
+        const date = new Date(unixTime * 1000);
+        const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric' });
+        const minute = date.toLocaleString('en-US', { timeZone: 'Europe/London', minute: 'numeric' });
+        const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
+        return (Number(hour) * 60 * 60) + (Number(minute) * 60) + Number(second);
     }
 };
 exports.MigrationService = MigrationService;

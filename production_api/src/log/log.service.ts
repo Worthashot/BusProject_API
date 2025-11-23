@@ -21,9 +21,15 @@ export class LogService {
         await queryRunner.commitTransaction();
         return;
       }
+    }catch (error) {
+      this.logger.error('Failed to store API keys:', error);
+      queryRunner.rollbackTransaction();
+    } finally{
+      await queryRunner.release();
+    }
 
 
-    try {
+    try{
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
@@ -44,7 +50,7 @@ export class LogService {
 
       this.logger.log('✅ API keys stored successfully');
       
-    } catch (error) {
+    }catch (error) {
       this.logger.error('Failed to store API keys:', error);
       queryRunner.rollbackTransaction();
     } finally{

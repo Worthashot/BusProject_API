@@ -12,6 +12,7 @@ const migration_controller_1 = require("./migration.controller");
 const migration_service_1 = require("./migration.service");
 const apikey_entity_1 = require("../auth/entities/apikey.entity");
 const typeorm_1 = require("@nestjs/typeorm");
+const log_old_entity_1 = require("../log/entities/log_old.entity");
 const log_entity_1 = require("../log/entities/log.entity");
 let MigrationModule = class MigrationModule {
 };
@@ -21,7 +22,7 @@ exports.MigrationModule = MigrationModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'old_api'),
             typeorm_1.TypeOrmModule.forFeature([apikey_entity_1.ApiKeyEntity], 'live'),
-            typeorm_1.TypeOrmModule.forFeature([log_entity_1.LogEntity], 'old_log'),
+            typeorm_1.TypeOrmModule.forFeature([log_old_entity_1.LogEntityOld], 'old_log'),
             typeorm_1.TypeOrmModule.forFeature([log_entity_1.LogEntity], 'live'),
         ],
         controllers: [migration_controller_1.MigrationController],

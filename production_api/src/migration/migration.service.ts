@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-
 @Injectable()
 export class MigrationService {
   private readonly logger = new Logger(MigrationService.name);
@@ -17,11 +16,22 @@ export class MigrationService {
     private liveDataSource: DataSource,
   ) {}
 
-  async performMigrationApiKey(): Promise<void> {
+  async performMigrationLog(): Promise<void> {
     try {
-      this.logger.log('Starting ApiKey database migration...');
-      await this.setupNewDatabaseApiKey();
-      await this.migrateApi();
+      this.logger.log('Starting Log database migration...');
+      await this.setupNewDatabaseLog();
+      let limit = 1000;
+      let offset = 0
+      let oldLog : any[];
+      do{
+        // Read from old database
+        oldLog = await this.oldLogDataSource.query(
+          'SELECT * FROM arrivals ORDER BY time LIMIT ? OFFSET ?',
+          [limit, offset]
+        );
+        await this.migrateLog(oldLog);
+        offset += limit
+      } while (oldLog.length === limit)
 
       
       this.logger.log('Migration completed successfully!');
@@ -31,11 +41,12 @@ export class MigrationService {
     }
   }
 
-    async performMigrationLog(): Promise<void> {
+    async performMigrationApiKey(): Promise<void> {
     try {
-      this.logger.log('Starting Log database migration...');
-      await this.setupNewDatabaseLog();
-      await this.migrateLog();
+      this.logger.log('Starting ApiKey database migration...');
+      await this.setupNewDatabaseApiKey();
+      
+      await this.migrateApi();
       
       this.logger.log('Migration completed successfully!');
     } catch (error) {
@@ -84,7 +95,7 @@ export class MigrationService {
     }
   }
 
-    async setupNewDatabaseLog(): Promise<void> {
+  async setupNewDatabaseLog(): Promise<void> {
     this.logger.log('Setting up new database tables...');
     
     const queryRunner = this.liveDataSource.createQueryRunner();
@@ -105,6 +116,7 @@ export class MigrationService {
             "trip_id" INTEGER NOT NULL,
             "journey_id" VARCHAR NOT NULL,
             "stop_id" INTEGER NOT NULL,
+            "date" INTEGER NOT NULL,
             "time" INTEGER NOT NULL
           )
         `);
@@ -159,26 +171,20 @@ export class MigrationService {
     }
   }
 
-    async migrateLog(): Promise<void> {
-    this.logger.log('Starting log migration...');
+    async migrateLog(oldLog): Promise<void> {
+    this.logger.log('Starting batch log migration...');
     try {
-      // Read from old database
-      const oldLog = await this.oldLogDataSource.query(
-        'SELECT * FROM arrivals'
-      );
 
-      this.logger.log(`Found ${oldLog.length} logs to migrate`);
 
       // Insert into new database
-      
       const values = oldLog.flatMap(log => 
-        [log.tripID, log.journeyID, log.stopID, log.date, log.time]
+        [log.trip_id, log.journey_id, log.stop_id, this.getDate(log.time), this.getTime(log.time)]
       );
 
       const placeholders = oldLog.map(() => '(?, ?, ?, ?, ?)').join(', ');
 
         await this.liveDataSource.query(
-          `INSERT INTO log (trip_id, journey_id, stop_id, time) 
+          `INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
            VALUES ${placeholders}`, values
         );
       
@@ -190,6 +196,20 @@ export class MigrationService {
       throw error;
     }
   }
+  //TODO Store these as numbers
+  private async getDate(unixTime : number): Promise<number>{
+    const date = new Date(unixTime * 1000); 
+    const year = date.toLocaleString('en-US', { timeZone: 'Europe/London', year: 'numeric' });
+    const month = date.toLocaleString('en-US', { timeZone: 'Europe/London', month: '2-digit' });
+    const day = date.toLocaleString('en-US', { timeZone: 'Europe/London', day: '2-digit' });
+    return Number(`${year}${month}${day}`)
+  }
 
-
+  private async getTime(unixTime : number): Promise<number>{
+    const date = new Date(unixTime * 1000); 
+    const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric' });
+    const minute = date.toLocaleString('en-US', { timeZone: 'Europe/London', minute: 'numeric' });
+    const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
+    return (Number(hour)*60*60) + (Number(minute) * 60) + Number(second)
+  }
 }

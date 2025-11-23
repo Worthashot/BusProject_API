@@ -16,5 +16,8 @@ export class LogEntity {
   stop_id: number;
 
   @Column({ default: true })
+  date: number;
+
+  @Column({ default: true })
   time: number;
 }

@@ -3,5 +3,6 @@ export declare class LogEntity {
     trip_id: number;
     journey_id: string;
     stop_id: number;
+    date: number;
     time: number;
 }

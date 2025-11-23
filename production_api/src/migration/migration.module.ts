@@ -3,12 +3,13 @@ import { MigrationController } from './migration.controller';
 import { MigrationService } from './migration.service';
 import { ApiKeyEntity } from '../auth/entities/apikey.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LogEntityOld } from 'src/log/entities/log_old.entity';
 import { LogEntity } from 'src/log/entities/log.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([ApiKeyEntity], 'old_api'),
         TypeOrmModule.forFeature([ApiKeyEntity], 'live'),
-        TypeOrmModule.forFeature([LogEntity], 'old_log'),
+        TypeOrmModule.forFeature([LogEntityOld], 'old_log'),
         TypeOrmModule.forFeature([LogEntity], 'live'),
 
       ],

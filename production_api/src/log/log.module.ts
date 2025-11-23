@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LogEntity } from '../log/entities/log.entity';
+import { LogEntity } from './entities/log.entity';
 import { Module } from '@nestjs/common';
 import { LogService } from './log.service';
 import { LogController } from './log.controller';

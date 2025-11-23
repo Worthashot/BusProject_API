@@ -42,12 +42,12 @@ url = "http://localhost:3000/auth/all_keys"
 r = requests.get(url, headers = headers)
 #%%
 #Careful, this takes 2.5 hours to run
-'''
+
 #Merge Databases
 url = "http://localhost:3000/migration/logs"
 
 r = requests.post(url, headers = headers)
-'''
+
 #%%
 '''
 #Merge Databases API Keys

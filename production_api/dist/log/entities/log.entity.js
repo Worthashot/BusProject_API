@@ -16,6 +16,7 @@ let LogEntity = class LogEntity {
     trip_id;
     journey_id;
     stop_id;
+    date;
     time;
 };
 exports.LogEntity = LogEntity;
@@ -35,6 +36,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Number)
 ], LogEntity.prototype, "stop_id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Number)
+], LogEntity.prototype, "date", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Number)

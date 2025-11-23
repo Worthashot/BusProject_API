@@ -3,6 +3,7 @@ import { MigrationModule } from './migration/migration.module';
 import {AuthModule} from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyEntity } from './auth/entities/apikey.entity';
+import { LogEntityOld } from './log/entities/log_old.entity';
 import { LogEntity } from './log/entities/log.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LogModule } from './log/log.module';
@@ -27,7 +28,7 @@ import { LogModule } from './log/log.module';
       useFactory: () => ({
       type: 'sqlite',
       database: 'old_log.db', 
-      entities: [LogEntity],
+      entities: [LogEntityOld],
       synchronize: false, 
       })
     }),
@@ -42,7 +43,7 @@ import { LogModule } from './log/log.module';
       })
     }),
 
-    LogModule,
+    //LogModule,
     MigrationModule,
     AuthModule,
   ],
