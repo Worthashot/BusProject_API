@@ -15,6 +15,7 @@ const apikey_entity_1 = require("./auth/entities/apikey.entity");
 const log_old_entity_1 = require("./log/entities/log_old.entity");
 const log_entity_1 = require("./log/entities/log.entity");
 const config_1 = require("@nestjs/config");
+const log_module_1 = require("./log/log.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -49,6 +50,7 @@ exports.AppModule = AppModule = __decorate([
                     synchronize: false,
                 })
             }),
+            log_module_1.LogModule,
             migration_module_1.MigrationModule,
             auth_module_1.AuthModule,
         ],

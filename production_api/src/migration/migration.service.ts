@@ -183,10 +183,10 @@ export class MigrationService {
 
       const placeholders = oldLog.map(() => '(?, ?, ?, ?, ?)').join(', ');
 
-        await this.liveDataSource.query(
-          `INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
-           VALUES ${placeholders}`, values
-        );
+      await this.liveDataSource.query(
+        `INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
+          VALUES ${placeholders}`, values
+      );
       
 
       this.logger.log('✅ logs migrated successfully');
@@ -196,20 +196,19 @@ export class MigrationService {
       throw error;
     }
   }
-  //TODO Store these as numbers
-  private async getDate(unixTime : number): Promise<number>{
-    const date = new Date(unixTime * 1000); 
-    const year = date.toLocaleString('en-US', { timeZone: 'Europe/London', year: 'numeric' });
-    const month = date.toLocaleString('en-US', { timeZone: 'Europe/London', month: '2-digit' });
-    const day = date.toLocaleString('en-US', { timeZone: 'Europe/London', day: '2-digit' });
-    return Number(`${year}${month}${day}`)
+  private getDate(unixTime : number): number{
+      const date = new Date(unixTime * 1000); 
+      const year = date.toLocaleString('en-US', { timeZone: 'Europe/London', year: 'numeric' });
+      const month = date.toLocaleString('en-US', { timeZone: 'Europe/London', month: '2-digit' });
+      const day = date.toLocaleString('en-US', { timeZone: 'Europe/London', day: '2-digit' });
+      return Number(`${year}${month}${day}`)
   }
 
-  private async getTime(unixTime : number): Promise<number>{
-    const date = new Date(unixTime * 1000); 
-    const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric' });
-    const minute = date.toLocaleString('en-US', { timeZone: 'Europe/London', minute: 'numeric' });
-    const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
-    return (Number(hour)*60*60) + (Number(minute) * 60) + Number(second)
+  private  getTime(unixTime : number): any{
+      const date = new Date(unixTime * 1000); 
+      const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric', hour12: false });
+      const minute = date.toLocaleString('en-US', { timeZone: 'Europe/London', minute: 'numeric' });
+      const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
+      return (Number(hour)*60*60) + (Number(minute) * 60) + Number(second)
   }
 }

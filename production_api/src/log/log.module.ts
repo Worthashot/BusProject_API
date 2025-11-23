@@ -6,7 +6,7 @@ import { LogController } from './log.controller';
 
 @Module({
 imports: [
-    TypeOrmModule.forFeature([LogEntity]), // Register entity for this module
+    TypeOrmModule.forFeature([LogEntity], 'live'), // Register entity for this module
   ],
 
     controllers: [LogController],

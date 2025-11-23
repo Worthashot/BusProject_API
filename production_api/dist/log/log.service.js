@@ -33,7 +33,7 @@ let LogService = LogService_1 = class LogService {
             }
         }
         catch (error) {
-            this.logger.error('Failed to store API keys:', error);
+            this.logger.error('Failed to release database after not needing to store logs (SHOULD NOT HAPPEN)', error);
             queryRunner.rollbackTransaction();
         }
         finally {
@@ -42,16 +42,19 @@ let LogService = LogService_1 = class LogService {
         try {
             await queryRunner.connect();
             await queryRunner.startTransaction();
-            const values = logs.flatMap(log => [log.tripID, log.journeyID, log.stopID, log.date, log.time]);
-            const placeholders = logs.map(() => '(?, ?, ?, ?, ?)').join(', ');
-            for (const log of logs) {
+            for (let i = 0; i < logs.length; i += 1000) {
+                this.logger.log('Storing Log batch...');
+                let logsBatch = logs.slice(i, i + 1000);
+                let values = logsBatch.flatMap(log => [log.tripID, log.journeyID, log.stopID, log.date, log.time]);
+                let placeholders = logsBatch.map(() => '(?, ?, ?, ?, ?)').join(', ');
                 await queryRunner.query(`INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
             VALUES ${placeholders}`, values);
+                this.logger.log('Log batch stored successfully');
             }
-            this.logger.log('✅ API keys stored successfully');
+            this.logger.log('✅ Logs stored successfully');
         }
         catch (error) {
-            this.logger.error('Failed to store API keys:', error);
+            this.logger.error('Failed to store Logs:', error);
             queryRunner.rollbackTransaction();
         }
         finally {

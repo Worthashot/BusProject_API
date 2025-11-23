@@ -75,52 +75,5 @@ url = "http://localhost:3000/auth/change_key_status"
 data = {"key" : key, "isActive" : 1}
 r = requests.post(url, data = data, headers = headers)
 #%%
-import sqlite3
-
-db_path= 'Desktop\\BusProject_API\\production_api\\database.db'
-table_name = 'api_keys'
-
-def get_column_types(db_path, table_name):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # Use PRAGMA table_info to get column information
-    cursor.execute(f"PRAGMA table_info({table_name})")
-    columns = cursor.fetchall()
-    
-    print(f"Column types for table '{table_name}':")
-    for col in columns:
-        col_id, name, data_type, not_null, default_value, pk = col
-        print(f"  {name}: {data_type} (PK: {pk}, Not Null: {not_null})")
-    
-    conn.close()
-    return columns
-
-# Usage
-get_column_types(db_path, table_name)
-
-#%%
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-    
-insert_sql = """
-INSERT INTO api_keys (key, name, permissionLevel) 
-VALUES ('KkneL2FAHNEZamp23J5H78CGyo7w3Qb8', 'Admin', 'ADMIN')
-"""
-
-cursor.execute(insert_sql)
-conn.commit()
-#%%
-
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-
-cursor.execute(f"SELECT * FROM api_keys")
-rows = cursor.fetchall()
-
-#%%
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-
-cursor.execute("DELETE FROM api_keys WHERE id = 1")
-conn.commit()
+url = "http://localhost:3000/log/test_number_conversion"
+r = requests.get(url, headers = headers)

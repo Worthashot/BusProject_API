@@ -25,7 +25,7 @@ __decorate([
     __metadata("design:type", Number)
 ], LogEntity.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], LogEntity.prototype, "trip_id", void 0);
 __decorate([
@@ -33,15 +33,15 @@ __decorate([
     __metadata("design:type", String)
 ], LogEntity.prototype, "journey_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], LogEntity.prototype, "stop_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], LogEntity.prototype, "date", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], LogEntity.prototype, "time", void 0);
 exports.LogEntity = LogEntity = __decorate([

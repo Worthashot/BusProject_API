@@ -43,7 +43,7 @@ import { LogModule } from './log/log.module';
       })
     }),
 
-    //LogModule,
+    LogModule,
     MigrationModule,
     AuthModule,
   ],

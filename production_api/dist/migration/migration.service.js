@@ -157,7 +157,7 @@ let MigrationService = MigrationService_1 = class MigrationService {
             const values = oldLog.flatMap(log => [log.trip_id, log.journey_id, log.stop_id, this.getDate(log.time), this.getTime(log.time)]);
             const placeholders = oldLog.map(() => '(?, ?, ?, ?, ?)').join(', ');
             await this.liveDataSource.query(`INSERT INTO log (trip_id, journey_id, stop_id, date, time) 
-           VALUES ${placeholders}`, values);
+          VALUES ${placeholders}`, values);
             this.logger.log('✅ logs migrated successfully');
         }
         catch (error) {
@@ -165,16 +165,16 @@ let MigrationService = MigrationService_1 = class MigrationService {
             throw error;
         }
     }
-    async getDate(unixTime) {
+    getDate(unixTime) {
         const date = new Date(unixTime * 1000);
         const year = date.toLocaleString('en-US', { timeZone: 'Europe/London', year: 'numeric' });
         const month = date.toLocaleString('en-US', { timeZone: 'Europe/London', month: '2-digit' });
         const day = date.toLocaleString('en-US', { timeZone: 'Europe/London', day: '2-digit' });
         return Number(`${year}${month}${day}`);
     }
-    async getTime(unixTime) {
+    getTime(unixTime) {
         const date = new Date(unixTime * 1000);
-        const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric' });
+        const hour = date.toLocaleString('en-US', { timeZone: 'Europe/London', hour: 'numeric', hour12: false });
         const minute = date.toLocaleString('en-US', { timeZone: 'Europe/London', minute: 'numeric' });
         const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
         return (Number(hour) * 60 * 60) + (Number(minute) * 60) + Number(second);

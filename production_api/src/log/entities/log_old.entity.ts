@@ -6,15 +6,15 @@ export class LogEntityOld {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   trip_id: number;
 
   @Column()
   journey_id: string;
 
-  @Column({ default: true })
+  @Column()
   stop_id: number;
 
-  @Column({ default: true })
+  @Column()
   time: number;
 }
