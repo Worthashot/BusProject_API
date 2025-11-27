@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
 
 
-@Entity('log_old')
-export class LogEntityOld {
+@Entity('arrival_basic')
+export class ArrivalBasicEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

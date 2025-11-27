@@ -8,10 +8,10 @@ export class LogAddElementDto {
   trip_id: number;
 
   @IsNotEmpty()
-  journey_id: string;
+  journey_id_api: string;
 
   @IsNotEmpty()
-  stop_id: number;
+  stop_id_api: number;
 
   @IsNotEmpty()
   time: number;

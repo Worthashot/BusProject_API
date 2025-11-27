@@ -4,7 +4,7 @@ import {AuthModule} from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiKeyEntity } from './auth/entities/apikey.entity';
 import { LogEntityOld } from './log/entities/log_old.entity';
-import { LogEntity } from './log/entities/log.entity';
+import { LogEntity } from './log/entities/arrival.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LogModule } from './log/log.module';
 

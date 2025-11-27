@@ -1,20 +1,209 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+
+
+
 @Injectable()
 export class MigrationService {
   private readonly logger = new Logger(MigrationService.name);
 
   constructor(
-    @InjectDataSource('old_api') 
-    private oldApiDataSource: DataSource,
-    
-    @InjectDataSource('old_log') 
-    private oldLogDataSource: DataSource,
+    @InjectDataSource('basic_arrivals') 
+    private basicArrivalsDataSource: DataSource,
+
+    @InjectDataSource('basic_journies') 
+    private basicJourniesDataSource: DataSource,
+
+    @InjectDataSource('basic_stops') 
+    private basicStopsDataSource: DataSource,
 
     @InjectDataSource('live') 
     private liveDataSource: DataSource,
   ) {}
+
+  async createStopsTable(): Promise<void>{
+    this.logger.log('Setting up table stops in database Live');
+    
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // Check if log table exists, if not create it
+
+      const stopsTableExists = await queryRunner.hasTable('stops');
+
+      if (!stopsTableExists) {
+        this.logger.log('Creating stops table in database Live...');
+        await queryRunner.query(`
+          CREATE TABLE "log" (
+            "stop_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "stop_name" VARCHAR NOT NULL,
+            "stop_api_id" INTEGER NOT NULL,
+            "latitude" REAL NOT NULL,
+            "longitude" REAL NOT NULL,
+            "bearing" INTEGER NOT NULL
+          )
+        `);
+        this.logger.log('stops table created successfully');
+      } else {
+        this.logger.log('stops table already exists');
+      }
+
+
+      await queryRunner.commitTransaction();
+      
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to setup new database:', error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createJourniesTable(): Promise<void>{
+    this.logger.log('Setting up table journies in database Live');
+    
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // Check if log table exists, if not create it
+
+      const journiesTableExists = await queryRunner.hasTable('journies');
+
+      if (!journiesTableExists) {
+        this.logger.log('Creating journies table in database Live...');
+        await queryRunner.query(`
+          CREATE TABLE "journies" (
+            "journey_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "journey_name" VARCHAR NOT NULL,
+            "service" VARCHAR NOT NULL,
+            "description" VARCHAR NOT NULL,
+            "destination" VARCHAR NOT REAL
+          )
+        `);
+        this.logger.log('stops table created successfully');
+      } else {
+        this.logger.log('stops table already exists');
+      }
+
+
+      await queryRunner.commitTransaction();
+      
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to setup new database:', error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  
+  async createLogsTable(): Promise<void>{
+    this.logger.log('Setting up table logs in database Live');
+    
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // Check if log table exists, if not create it
+
+      const logsTableExists = await queryRunner.hasTable('logs');
+
+      if (!logsTableExists) {
+        await queryRunner.query(`
+          CREATE TABLE logs (
+            log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            stop_id INTEGER NOT NULL,
+            journey_id INTEGER NOT NULL,
+            stop_sequence INTEGER,
+            direction TEXT,
+            FOREIGN KEY (stop_id) REFERENCES stops(stop_id),
+            FOREIGN KEY (journey_id) REFERENCES journies(journey_id),
+            UNIQUE(stop_id, journey_id, direction)
+          )
+        `);
+        this.logger.log('stops table created successfully');
+      } else {
+        this.logger.log('stops table already exists');
+      }
+
+
+      await queryRunner.commitTransaction();
+      
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to setup new database:', error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createArrivalsTable(): Promise<void>{
+    this.logger.log('Setting up table arrivals in database Live');
+    
+    const queryRunner = this.liveDataSource.createQueryRunner();
+    
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // Check if log table exists, if not create it
+
+      const arrivalsTableExists = await queryRunner.hasTable('arrivals');
+
+      if (!arrivalsTableExists) {
+        await queryRunner.query(`
+          CREATE TABLE arrivals (
+            arrival_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            log_id INTEGER NOT NULL,
+            trip_id INTEGER NOT NULL,
+            date INTEGER NOT NULL,
+            time INTEGER NOT NULL,
+            FOREIGN KEY (log_id) REFERENCES logs(log_id)
+          )
+        `);
+        this.logger.log('stops table created successfully');
+      } else {
+        this.logger.log('stops table already exists');
+      }
+
+
+      await queryRunner.commitTransaction();
+      
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Failed to setup new database:', error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  } 
+
+  async performMigrationStops(): Promise<void>{
+    return
+  }
+
+  async performMigrationJournies(): Promise<void>{
+    return
+  }
+
+  async populateLogJunctions(): Promise<void>{
+    return
+  }
+
+  async performMigrationArrivals(): Promise<void>{
+    return
+  }
 
   async performMigrationLog(): Promise<void> {
     try {
