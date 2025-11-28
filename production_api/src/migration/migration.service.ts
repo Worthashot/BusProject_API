@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-
-
+import { StopBasic } from './interfaces/stop.basic.interface';
+import { JourneyBasic } from './interfaces/journey.basic.interface';
 
 @Injectable()
 export class MigrationService {
@@ -190,7 +190,27 @@ export class MigrationService {
   } 
 
   async performMigrationStops(): Promise<void>{
-    return
+    try {
+      this.logger.log('Starting stops database migration...');
+      let limit = 1000;
+      let offset = 0
+      let oldLog : StopBasic[];
+      do{
+        // Read from old database
+        oldLog = await this.basicArrivalsDataSource.query(
+          'SELECT * FROM arrivals ORDER BY time LIMIT ? OFFSET ?',
+          [limit, offset]
+        );
+        await this.migrateLog(oldLog);
+        offset += limit
+      } while (oldLog.length === limit)
+
+      
+      this.logger.log('Migration completed successfully!');
+    } catch (error) {
+      this.logger.error('Migration failed:', error);
+      throw error;
+    }
   }
 
   async performMigrationJournies(): Promise<void>{
@@ -400,4 +420,65 @@ export class MigrationService {
       const second = date.toLocaleString('en-US', { timeZone: 'Europe/London', second: 'numeric' });
       return (Number(hour)*60*60) + (Number(minute) * 60) + Number(second)
   }
+
+  private isStopBasic(sample: any): sample is StopBasic {
+    return (
+      sample !== null &&
+      sample !== undefined &&
+      typeof sample === 'object' &&
+      typeof sample.name === 'string' &&
+      typeof sample.apiId === 'number' &&
+      typeof sample.latitude === 'number' &&
+      typeof sample.longitude === 'number' &&
+      typeof sample.bearing === 'number'
+    );
+  }
+
+  private isStopBasicArray(sample : any): sample is StopBasic[] {
+    if (!Array.isArray(sample)) {
+      return false;
+    }
+
+    // Check each element in the array
+    return sample.every(item => 
+      item !== null &&
+      item !== undefined &&
+      typeof item === 'object' &&
+      typeof item.name === 'string' &&
+      typeof item.apiId === 'number' &&
+      typeof item.latitude === 'number' &&
+      typeof item.longitude === 'number' &&
+      typeof item.bearing === 'number'
+    );
+  }
+
+    private isJourneyBasic(sample: any): sample is JourneyBasic {
+    return (
+      sample !== null &&
+      sample !== undefined &&
+      typeof sample === 'object' &&
+      typeof sample.name === 'string' &&
+      typeof sample.service === 'string' &&
+      typeof sample.description === 'string' &&
+      typeof sample.destination === 'string'
+    );
+  }
+
+  private isJourneyBasicArray(sample : any): sample is JourneyBasic[] {
+    if (!Array.isArray(sample)) {
+      return false;
+    }
+
+    // Check each element in the array
+    return sample.every(item => 
+      item !== null &&
+      item !== undefined &&
+      typeof item === 'object' &&
+      typeof item.name === 'string' &&
+      typeof item.service === 'string' &&
+      typeof item.description === 'string' &&
+      typeof item.destination === 'string'
+    );
+  }
+
 }

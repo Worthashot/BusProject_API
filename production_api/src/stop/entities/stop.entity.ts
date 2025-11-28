@@ -21,6 +21,9 @@ export class StopEntity {
   @Column()
   bearing : number
 
+  @Column()
+  is_active : number
+
 @OneToMany(() => LogEntity, log => log.stop)
   logs: LogEntity[];
 }

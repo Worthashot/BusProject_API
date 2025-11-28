@@ -1,7 +1,7 @@
 export interface StopBasic {
   name: string
   apiId: number
-  latitude: string
-  longitude: string
+  latitude: number
+  longitude: number
   bearing : number
 }
